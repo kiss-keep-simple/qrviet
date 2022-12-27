@@ -1,0 +1,40 @@
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.2.2/axios.min.js"
+        integrity="sha512-QTnb9BQkG4fBYIt9JGvYmxPpd6TBeKp6lsUrtiVQsrJ9sb33Bn9s0wMQO9qVBFbPX3xHRAsBHvXlcsrnJjExjg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+    <button onclick="getData()">Get Data</button><br>
+    <textarea id="links" rows="200" cols="200"></textarea>
+    <script>
+        async function getData() {
+            var links = document.getElementById("links").value.split("\n");
+            document.getElementById("links").value = document.getElementById("links").value.replace("URL","QR");
+            for (let i = 0; i < links.length; i++) {
+                let link = links[i];
+                if (link.indexOf("http") >= 0) {
+                    link = "http://api.qrserver.com/v1/read-qr-code/?fileurl=" + encodeURIComponent(link);
+                    console.log(link);
+                    getLink(link);
+                }
+
+            }
+        }
+
+        function getLink(link) {
+            axios.get(link)
+                .then(function (response) {
+                    // handle success
+                    console.log(response.config.url);
+                    var url = decodeURIComponent(response.config.url.replace("http://api.qrserver.com/v1/read-qr-code/?fileurl=", ""));
+                    console.log(response.data[0].symbol[0].data);
+                    document.getElementById("links").value = document.getElementById("links").value.replace(url, response.data[0].symbol[0].data)
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+
+        }
+    </script>
+</body>
